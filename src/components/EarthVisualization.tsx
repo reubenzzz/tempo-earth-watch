@@ -92,19 +92,15 @@ function SpaceDebris() {
 function Earth({ pollutionLevel, onRegionClick, selectedLocation }: EarthProps) {
   const meshRef = useRef<THREE.Mesh>(null);
   const pollutionRef = useRef<THREE.Mesh>(null);
-  const highlightRef = useRef<THREE.Mesh>(null);
-  const { camera, gl } = useThree();
+  const { camera } = useThree();
 
-  // Load textures with proper wrapping
+  // Load textures with correct color space
   const [earthMap, pollutionMap] = useMemo(() => {
-    const textureLoader = new THREE.TextureLoader();
-    const earth = textureLoader.load(earthTexture);
-    const pollution = textureLoader.load(pollutionOverlay);
-    
-    // Ensure textures wrap around the sphere properly
-    earth.wrapS = earth.wrapT = THREE.RepeatWrapping;
-    pollution.wrapS = pollution.wrapT = THREE.RepeatWrapping;
-    
+    const loader = new THREE.TextureLoader();
+    const earth = loader.load(earthTexture);
+    earth.colorSpace = THREE.SRGBColorSpace;
+    const pollution = loader.load(pollutionOverlay);
+    pollution.colorSpace = THREE.SRGBColorSpace;
     return [earth, pollution];
   }, []);
 
@@ -116,52 +112,34 @@ function Earth({ pollutionLevel, onRegionClick, selectedLocation }: EarthProps) 
     if (pollutionRef.current && !selectedLocation) {
       pollutionRef.current.rotation.y += 0.001;
     }
-    if (highlightRef.current && !selectedLocation) {
-      highlightRef.current.rotation.y += 0.001;
-    }
   });
 
-  // Rotate to selected location
+  // Rotate camera to selected location
   useEffect(() => {
     if (selectedLocation && meshRef.current) {
       const lat = selectedLocation.lat * (Math.PI / 180);
       const lng = selectedLocation.lng * (Math.PI / 180);
-      
-      // Animate camera to focus on region
+
       const radius = 6;
       const targetX = radius * Math.cos(lat) * Math.sin(lng);
       const targetY = radius * Math.sin(lat);
       const targetZ = radius * Math.cos(lat) * Math.cos(lng);
-      
+
       camera.position.set(targetX, targetY, targetZ);
       camera.lookAt(0, 0, 0);
-      
-      // Rotate earth to show the selected region
-      if (meshRef.current) {
-        meshRef.current.rotation.y = -lng;
-        meshRef.current.rotation.x = -lat;
-      }
-      if (pollutionRef.current) {
-        pollutionRef.current.rotation.y = -lng;
-        pollutionRef.current.rotation.x = -lat;
-      }
-      if (highlightRef.current) {
-        highlightRef.current.rotation.y = -lng;
-        highlightRef.current.rotation.x = -lat;
-      }
     }
   }, [selectedLocation, camera]);
 
   const handleClick = (event: any) => {
     event.stopPropagation();
-    if (meshRef.current && event.intersections[0]) {
-      const intersect = event.intersections[0];
-      const point = intersect.point;
-      
+    if (meshRef.current) {
+      const point: THREE.Vector3 = event.point ?? event.intersections?.[0]?.point;
+      if (!point) return;
+
       // Convert 3D point to lat/lng
       const lat = Math.asin(point.y / 2) * (180 / Math.PI);
-      const lng = Math.atan2(point.z, point.x) * (180 / Math.PI);
-      
+      const lng = Math.atan2(point.x, point.z) * (180 / Math.PI);
+
       onRegionClick?.(lat, lng);
     }
   };
@@ -191,18 +169,16 @@ function Earth({ pollutionLevel, onRegionClick, selectedLocation }: EarthProps) 
           map={earthMap}
           roughness={0.7}
           metalness={0.1}
-          side={THREE.DoubleSide}
         />
       </Sphere>
 
       {/* Pollution heatmap overlay */}
-      <Sphere ref={pollutionRef} args={[2.02, 128, 128]}>
+      <Sphere ref={pollutionRef} args={[2.01, 128, 128]}>
         <meshBasicMaterial
           map={pollutionMap}
           transparent
           opacity={pollutionOpacity}
           blending={THREE.AdditiveBlending}
-          side={THREE.DoubleSide}
         />
       </Sphere>
 
