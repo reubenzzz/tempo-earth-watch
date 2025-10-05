@@ -1,12 +1,17 @@
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import EarthVisualization from "@/components/EarthVisualization";
 import LocationSearch from "@/components/LocationSearch";
 import AirQualityCard from "@/components/AirQualityCard";
 import HealthImpact from "@/components/HealthImpact";
 import MajorCities from "@/components/MajorCities";
+import FlightPredictions from "@/components/FlightPredictions";
+import AnimalStatus from "@/components/AnimalStatus";
+import MedicalFacilities from "@/components/MedicalFacilities";
 import { Button } from "@/components/ui/button";
 import { LogOut, Info } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -32,8 +37,15 @@ const Dashboard = () => {
     setPollutionLevel(city.aqi);
   };
 
-  const handleLogout = () => {
-    navigate("/auth");
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    toast({
+      title: "Logged out",
+      description: "You have been successfully logged out.",
+    });
+    navigate("/login");
   };
 
   const overallLevel = pollutionLevel < 50 ? "good" : pollutionLevel < 100 ? "moderate" : pollutionLevel < 150 ? "unhealthy" : "hazardous";
@@ -93,6 +105,15 @@ const Dashboard = () => {
           <HealthImpact airQualityLevel={overallLevel} />
           <MajorCities onCitySelect={handleCitySelect} />
         </div>
+
+        {/* Flight Predictions & Animal Status */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <FlightPredictions pollutionLevel={pollutionLevel} location={currentLocation.name} />
+          <AnimalStatus location={currentLocation.name} />
+        </div>
+
+        {/* Medical Facilities */}
+        <MedicalFacilities location={currentLocation.name} />
 
         {/* Info Footer */}
         <div className="bg-card/30 backdrop-blur-sm rounded-lg p-6 border border-primary/20">
