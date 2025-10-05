@@ -96,7 +96,7 @@ const LoadingAnimation = ({ onComplete }: { onComplete: () => void }) => {
         <div className="text-center space-y-6 max-w-md mx-auto">
           <div className="space-y-2">
             <h1 className="text-4xl font-bold bg-gradient-nasa bg-clip-text text-transparent">
-              Airo Space
+              Air-o-pulse
             </h1>
             <h2 className="text-xl font-semibold text-foreground animate-pulse">
               {getMessage()}
