@@ -106,7 +106,7 @@ const Login = () => {
           <div className="flex items-center justify-center gap-2 mb-4">
             <Globe className="w-8 h-8 text-primary" />
             <div>
-              <h1 className="text-2xl font-bold">NASA TEMPO</h1>
+              <h1 className="text-2xl font-bold">Airo Pulse</h1>
               <p className="text-xs text-muted-foreground">Air Quality Monitoring</p>
             </div>
           </div>
