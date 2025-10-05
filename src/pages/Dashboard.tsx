@@ -57,14 +57,7 @@ const Dashboard = () => {
   };
    const { toast } = useToast();
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    toast({
-      title: "Logged out",
-      description: "You have been successfully logged out.",
-    });
-    navigate("/login");
-  };
+  
 
   const overallLevel = pollutionLevel < 50 ? "good" : pollutionLevel < 100 ? "moderate" : pollutionLevel < 150 ? "unhealthy" : "hazardous";
 
