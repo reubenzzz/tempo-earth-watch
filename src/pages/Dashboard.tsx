@@ -81,7 +81,7 @@ const Dashboard = () => {
               </svg>
             </div>
             <div>
-              <h1 className="text-xl font-bold">Airo Space</h1>
+              <h1 className="text-xl font-bold">Air-o-Pulse</h1>
               <p className="text-xs text-muted-foreground">Air Quality Monitoring</p>
             </div>
           </div>
