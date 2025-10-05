@@ -10,49 +10,92 @@ interface MedicalFacilitiesProps {
 const MedicalFacilities = ({ location }: MedicalFacilitiesProps) => {
   const facilities = [
     {
-      name: "City Medical Center",
+      name: "Apollo Pharmacy",
+      type: "Pharmacy",
+      distance: "0.2 km",
+      hasInhalers: true,
+      phone: "+91 1800-123-1234",
+      hours: "24/7",
+      address: "MG Road, Sector 15",
+      inhalerTypes: "Salbutamol, Budecort, Asthalin",
+      rating: 4.5
+    },
+    {
+      name: "Max Super Specialty Hospital",
       type: "Hospital",
       distance: "0.8 km",
       hasInhalers: true,
-      phone: "+1 555-0100",
-      hours: "24/7",
-      address: "123 Medical Plaza"
+      phone: "+91 11-2651-5050",
+      hours: "24/7 Emergency",
+      address: "Saket, Press Enclave Road",
+      inhalerTypes: "Full Stock Available",
+      rating: 4.7
     },
     {
-      name: "HealthPlus Pharmacy",
+      name: "MedPlus Pharmacy",
       type: "Pharmacy",
-      distance: "0.3 km",
+      distance: "0.4 km",
       hasInhalers: true,
-      phone: "+1 555-0201",
-      hours: "8 AM - 10 PM",
-      address: "45 Main Street"
+      phone: "+91 1800-102-6633",
+      hours: "8 AM - 11 PM",
+      address: "Connaught Place",
+      inhalerTypes: "Asthalin, Seroflo, Levolin",
+      rating: 4.3
     },
     {
-      name: "QuickCare Clinic",
-      type: "Clinic",
+      name: "Fortis Healthcare",
+      type: "Hospital",
       distance: "1.2 km",
       hasInhalers: true,
-      phone: "+1 555-0302",
-      hours: "9 AM - 6 PM",
-      address: "789 Health Avenue"
+      phone: "+91 11-4277-6222",
+      hours: "24/7",
+      address: "Vasant Kunj",
+      inhalerTypes: "All Types Available",
+      rating: 4.8
     },
     {
-      name: "MediStop Pharmacy",
+      name: "1mg Medical Store",
       type: "Pharmacy",
+      distance: "0.6 km",
+      hasInhalers: true,
+      phone: "+91 1800-103-1088",
+      hours: "9 AM - 10 PM",
+      address: "Nehru Place",
+      inhalerTypes: "Levolin, Foracort, Duolin",
+      rating: 4.4
+    },
+    {
+      name: "AIIMS Respiratory Clinic",
+      type: "Clinic",
       distance: "1.5 km",
       hasInhalers: true,
-      phone: "+1 555-0403",
-      hours: "7 AM - 11 PM",
-      address: "321 Wellness Blvd"
+      phone: "+91 11-2659-3333",
+      hours: "8 AM - 8 PM",
+      address: "Ansari Nagar East",
+      inhalerTypes: "Generic & Branded",
+      rating: 4.6
     },
     {
-      name: "Emergency Care Plus",
+      name: "Wellness Forever Pharmacy",
+      type: "Pharmacy",
+      distance: "0.9 km",
+      hasInhalers: true,
+      phone: "+91 22-6806-6806",
+      hours: "24/7",
+      address: "Lajpat Nagar",
+      inhalerTypes: "Budamate, Duolin, Seroflo",
+      rating: 4.2
+    },
+    {
+      name: "Columbia Asia Hospital",
       type: "Emergency",
       distance: "2.1 km",
       hasInhalers: true,
-      phone: "+1 555-0504",
+      phone: "+91 11-4366-6666",
       hours: "24/7",
-      address: "567 Care Street"
+      address: "Palam Vihar, Gurgaon",
+      inhalerTypes: "Full Range Stocked",
+      rating: 4.5
     },
   ];
 
@@ -83,37 +126,39 @@ const MedicalFacilities = ({ location }: MedicalFacilitiesProps) => {
             {facilities.map((facility, index) => (
               <div
                 key={index}
-                className="p-4 rounded-lg bg-muted/20 hover:bg-muted/30 transition-colors border border-primary/10"
+                className="p-4 rounded-lg bg-muted/20 hover:bg-muted/30 transition-all duration-200 border border-primary/10 hover:shadow-glow"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-semibold">{facility.name}</h3>
-                      {facility.hasInhalers && (
-                        <Badge variant="default" className="text-xs">
-                          Inhalers Available
-                        </Badge>
-                      )}
+                      <h3 className="font-semibold text-sm">{facility.name}</h3>
+                      <div className="flex items-center gap-1">
+                        <span className="text-xs text-warning">★</span>
+                        <span className="text-xs text-muted-foreground">{facility.rating}</span>
+                      </div>
                     </div>
-                    <p className="text-xs text-muted-foreground">{facility.address}</p>
+                    <p className="text-xs text-muted-foreground mb-1">{facility.address}</p>
+                    {facility.hasInhalers && (
+                      <p className="text-xs text-success">📦 {facility.inhalerTypes}</p>
+                    )}
                   </div>
-                  <Badge className={getTypeColor(facility.type)}>
+                  <Badge className={`${getTypeColor(facility.type)} text-xs`}>
                     {facility.type}
                   </Badge>
                 </div>
 
-                <div className="grid grid-cols-3 gap-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-primary" />
-                    <span className="text-xs">{facility.distance}</span>
+                <div className="grid grid-cols-3 gap-3 text-sm pt-3 border-t border-primary/10">
+                  <div className="flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5 text-primary" />
+                    <span className="text-xs font-medium">{facility.distance}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-primary" />
-                    <span className="text-xs">{facility.hours}</span>
+                  <div className="flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5 text-success" />
+                    <span className="text-xs font-medium text-success">{facility.hours}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Phone className="w-4 h-4 text-primary" />
-                    <span className="text-xs">{facility.phone}</span>
+                  <div className="flex items-center gap-1.5">
+                    <Phone className="w-3.5 h-3.5 text-accent" />
+                    <span className="text-xs">Call</span>
                   </div>
                 </div>
               </div>

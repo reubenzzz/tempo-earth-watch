@@ -13,11 +13,28 @@ interface City {
 }
 
 const cities: City[] = [
-  // Asia
+  // India - Major Cities
+  { name: "New Delhi", country: "India", continent: "Asia", aqi: 189, level: "unhealthy", lat: 28.6139, lng: 77.2090 },
+  { name: "Mumbai", country: "India", continent: "Asia", aqi: 175, level: "unhealthy", lat: 19.0760, lng: 72.8777 },
+  { name: "Bangalore", country: "India", continent: "Asia", aqi: 145, level: "unhealthy", lat: 12.9716, lng: 77.5946 },
+  { name: "Kolkata", country: "India", continent: "Asia", aqi: 168, level: "unhealthy", lat: 22.5726, lng: 88.3639 },
+  { name: "Chennai", country: "India", continent: "Asia", aqi: 132, level: "unhealthy", lat: 13.0827, lng: 80.2707 },
+  { name: "Hyderabad", country: "India", continent: "Asia", aqi: 152, level: "unhealthy", lat: 17.3850, lng: 78.4867 },
+  { name: "Pune", country: "India", continent: "Asia", aqi: 138, level: "unhealthy", lat: 18.5204, lng: 73.8567 },
+  { name: "Ahmedabad", country: "India", continent: "Asia", aqi: 162, level: "unhealthy", lat: 23.0225, lng: 72.5714 },
+  { name: "Jaipur", country: "India", continent: "Asia", aqi: 155, level: "unhealthy", lat: 26.9124, lng: 75.7873 },
+  { name: "Lucknow", country: "India", continent: "Asia", aqi: 178, level: "unhealthy", lat: 26.8467, lng: 80.9462 },
+  { name: "Kanpur", country: "India", continent: "Asia", aqi: 185, level: "unhealthy", lat: 26.4499, lng: 80.3319 },
+  { name: "Nagpur", country: "India", continent: "Asia", aqi: 148, level: "unhealthy", lat: 21.1458, lng: 79.0882 },
+  { name: "Indore", country: "India", continent: "Asia", aqi: 142, level: "unhealthy", lat: 22.7196, lng: 75.8577 },
+  { name: "Patna", country: "India", continent: "Asia", aqi: 192, level: "unhealthy", lat: 25.5941, lng: 85.1376 },
+  { name: "Chandigarh", country: "India", continent: "Asia", aqi: 125, level: "unhealthy", lat: 30.7333, lng: 76.7794 },
+  { name: "Surat", country: "India", continent: "Asia", aqi: 135, level: "unhealthy", lat: 21.1702, lng: 72.8311 },
+  { name: "Varanasi", country: "India", continent: "Asia", aqi: 188, level: "unhealthy", lat: 25.3176, lng: 82.9739 },
+  
+  // Asia - Other Countries
   { name: "Tokyo", country: "Japan", continent: "Asia", aqi: 45, level: "good", lat: 35.6762, lng: 139.6503 },
   { name: "Beijing", country: "China", continent: "Asia", aqi: 165, level: "unhealthy", lat: 39.9042, lng: 116.4074 },
-  { name: "Mumbai", country: "India", continent: "Asia", aqi: 178, level: "unhealthy", lat: 19.0760, lng: 72.8777 },
-  { name: "New Delhi", country: "India", continent: "Asia", aqi: 182, level: "unhealthy", lat: 28.6139, lng: 77.2090 },
   { name: "Singapore", country: "Singapore", continent: "Asia", aqi: 32, level: "good", lat: 1.3521, lng: 103.8198 },
   { name: "Dubai", country: "UAE", continent: "Asia", aqi: 88, level: "moderate", lat: 25.2048, lng: 55.2708 },
   { name: "Shanghai", country: "China", continent: "Asia", aqi: 135, level: "unhealthy", lat: 31.2304, lng: 121.4737 },

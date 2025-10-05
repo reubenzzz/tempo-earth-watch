@@ -28,13 +28,31 @@ const Dashboard = () => {
 
   const handleLocationSelect = (location: { lat: number; lng: number; name: string }) => {
     setCurrentLocation(location);
-    // Mock pollution level based on location - replace with real data
+    // Mock pollution level based on location
     setPollutionLevel(Math.floor(Math.random() * 100));
+    toast({
+      title: "Location updated",
+      description: `Now showing data for ${location.name}`,
+    });
   };
 
   const handleCitySelect = (city: any) => {
     setCurrentLocation({ name: city.name, lat: city.lat, lng: city.lng });
     setPollutionLevel(city.aqi);
+    toast({
+      title: "City selected",
+      description: `Viewing air quality data for ${city.name}`,
+    });
+  };
+
+  const handleRegionClick = (lat: number, lng: number) => {
+    const regionName = `Region ${lat.toFixed(2)}°, ${lng.toFixed(2)}°`;
+    setCurrentLocation({ name: regionName, lat, lng });
+    setPollutionLevel(Math.floor(Math.random() * 100));
+    toast({
+      title: "Region selected",
+      description: `Exploring ${regionName}`,
+    });
   };
 
   const { toast } = useToast();
@@ -88,9 +106,9 @@ const Dashboard = () => {
           <LocationSearch onLocationSelect={handleLocationSelect} />
         </div>
 
-        {/* 3D Earth Visualization */}
+        {/* 3D Earth Visualization - Interactive */}
         <div className="relative">
-          <EarthVisualization pollutionLevel={pollutionLevel} />
+          <EarthVisualization pollutionLevel={pollutionLevel} onRegionClick={handleRegionClick} />
         </div>
 
         {/* Air Quality Metrics Grid */}

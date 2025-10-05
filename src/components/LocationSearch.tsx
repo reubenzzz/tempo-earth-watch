@@ -48,18 +48,35 @@ const LocationSearch = ({ onLocationSelect }: LocationSearchProps) => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
+          const locationName = `${latitude.toFixed(4)}°, ${longitude.toFixed(4)}°`;
+          
           onLocationSelect({
             lat: latitude,
             lng: longitude,
-            name: "Current Location",
+            name: locationName,
           });
-          toast.success("Location detected successfully");
+          toast.success(`Location detected: ${locationName}`);
           setIsLocating(false);
         },
         (error) => {
-          toast.error("Unable to access location. Please check permissions.");
           setIsLocating(false);
-          console.error(error);
+          let errorMessage = "Unable to access location.";
+          
+          if (error.code === error.PERMISSION_DENIED) {
+            errorMessage = "Location access denied. Please enable location permissions in your browser.";
+          } else if (error.code === error.POSITION_UNAVAILABLE) {
+            errorMessage = "Location unavailable. Please try again or search manually.";
+          } else if (error.code === error.TIMEOUT) {
+            errorMessage = "Location request timed out. Please try again.";
+          }
+          
+          toast.error(errorMessage);
+          console.error("Geolocation error:", error);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
         }
       );
     } else {

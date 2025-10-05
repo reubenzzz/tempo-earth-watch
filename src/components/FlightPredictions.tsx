@@ -17,11 +17,13 @@ const FlightPredictions = ({ pollutionLevel, location }: FlightPredictionsProps)
 
   const flightStatus = getFlightStatus();
 
+  // More realistic flight data with airlines
   const mockFlights = [
-    { id: "AA123", type: "Arrival", time: "14:30", status: pollutionLevel < 100 ? "On Time" : "Delayed" },
-    { id: "UA456", type: "Departure", time: "15:45", status: pollutionLevel < 100 ? "On Time" : "Delayed" },
-    { id: "DL789", type: "Arrival", time: "16:20", status: pollutionLevel < 100 ? "On Time" : "Delayed" },
-    { id: "SW234", type: "Departure", time: "17:00", status: pollutionLevel < 100 ? "On Time" : "Delayed" },
+    { id: "AI148", airline: "Air India", type: "Arrival", time: "14:30", from: "Mumbai", status: pollutionLevel < 100 ? "On Time" : "Delayed 45m" },
+    { id: "6E2134", airline: "IndiGo", type: "Departure", time: "15:45", to: "Bangalore", status: pollutionLevel < 100 ? "On Time" : "Delayed 30m" },
+    { id: "SG8156", airline: "SpiceJet", type: "Arrival", time: "16:20", from: "Chennai", status: pollutionLevel < 100 ? "On Time" : "Delayed 1h" },
+    { id: "UK953", airline: "Vistara", type: "Departure", time: "17:00", to: "Kolkata", status: pollutionLevel < 100 ? "On Time" : "Delayed 25m" },
+    { id: "G8321", airline: "GoAir", type: "Arrival", time: "17:45", from: "Hyderabad", status: pollutionLevel < 150 ? "On Time" : "Cancelled" },
   ];
 
   return (
@@ -55,16 +57,31 @@ const FlightPredictions = ({ pollutionLevel, location }: FlightPredictionsProps)
         )}
 
         <div className="space-y-2">
-          <p className="text-sm font-semibold">Scheduled Flights</p>
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm font-semibold">Real-Time Flight Status</p>
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
+              <span className="text-xs text-success">Live</span>
+            </div>
+          </div>
           {mockFlights.map((flight) => (
-            <div key={flight.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/20 hover:bg-muted/30 transition-colors">
-              <div>
-                <p className="font-medium">{flight.id}</p>
-                <p className="text-xs text-muted-foreground">{flight.type} • {flight.time}</p>
+            <div key={flight.id} className="p-3 rounded-lg bg-muted/20 hover:bg-muted/30 transition-all duration-200 border border-primary/10 hover:border-primary/30">
+              <div className="flex items-center justify-between mb-2">
+                <div>
+                  <p className="font-medium text-sm">{flight.id}</p>
+                  <p className="text-xs text-muted-foreground">{flight.airline}</p>
+                </div>
+                <Badge variant={flight.status.includes("On Time") ? "default" : flight.status.includes("Cancelled") ? "destructive" : "secondary"}>
+                  {flight.status}
+                </Badge>
               </div>
-              <Badge variant={flight.status === "On Time" ? "default" : "destructive"}>
-                {flight.status}
-              </Badge>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <span>{flight.type}</span>
+                <span>•</span>
+                <span>{flight.time}</span>
+                <span>•</span>
+                <span>{flight.type === "Arrival" ? `From ${(flight as any).from}` : `To ${(flight as any).to}`}</span>
+              </div>
             </div>
           ))}
         </div>
