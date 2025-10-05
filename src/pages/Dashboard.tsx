@@ -8,6 +8,7 @@ import MajorCities from "@/components/MajorCities";
 import FlightPredictions from "@/components/FlightPredictions";
 import AnimalStatus from "@/components/AnimalStatus";
 import MedicalFacilities from "@/components/MedicalFacilities";
+import SpaceDebrisInfo from "@/components/SpaceDebrisInfo";
 import { Button } from "@/components/ui/button";
 import { LogOut, Info } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -108,7 +109,11 @@ const Dashboard = () => {
 
         {/* 3D Earth Visualization - Interactive */}
         <div className="relative">
-          <EarthVisualization pollutionLevel={pollutionLevel} onRegionClick={handleRegionClick} />
+          <EarthVisualization 
+            pollutionLevel={pollutionLevel} 
+            onRegionClick={handleRegionClick}
+            selectedLocation={currentLocation}
+          />
         </div>
 
         {/* Air Quality Metrics Grid */}
@@ -130,8 +135,11 @@ const Dashboard = () => {
           <AnimalStatus location={currentLocation.name} />
         </div>
 
-        {/* Medical Facilities */}
-        <MedicalFacilities location={currentLocation.name} />
+        {/* Medical Facilities & Space Debris */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <MedicalFacilities location={currentLocation.name} />
+          <SpaceDebrisInfo />
+        </div>
 
         {/* Info Footer */}
         <div className="bg-card/30 backdrop-blur-sm rounded-lg p-6 border border-primary/20">
