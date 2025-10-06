@@ -12,32 +12,47 @@ const LocationSearch = ({ onLocationSelect }: LocationSearchProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isLocating, setIsLocating] = useState(false);
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (!searchQuery.trim()) {
       toast.error("Please enter a location");
       return;
     }
     
-    // Mock location search - replace with real geocoding API
-    const mockLocations: Record<string, { lat: number; lng: number }> = {
-      "new york": { lat: 40.7128, lng: -74.0060 },
-      "london": { lat: 51.5074, lng: -0.1278 },
-      "tokyo": { lat: 35.6762, lng: 139.6503 },
-      "paris": { lat: 48.8566, lng: 2.3522 },
-      "sydney": { lat: -33.8688, lng: 151.2093 },
-      "mumbai": { lat: 19.0760, lng: 72.8777 },
-      "beijing": { lat: 39.9042, lng: 116.4074 },
-      "dubai": { lat: 25.2048, lng: 55.2708 },
-      "singapore": { lat: 1.3521, lng: 103.8198 },
-      "los angeles": { lat: 34.0522, lng: -118.2437 },
-    };
-
-    const location = mockLocations[searchQuery.toLowerCase()];
-    if (location) {
-      onLocationSelect({ ...location, name: searchQuery });
-      toast.success(`Location set to ${searchQuery}`);
-    } else {
-      toast.error("Location not found. Try major cities like New York, London, Tokyo");
+    setIsLocating(true);
+    
+    try {
+      // Using Nominatim OpenStreetMap geocoding API (free, no key required)
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchQuery)}&format=json&limit=1`,
+        {
+          headers: {
+            'User-Agent': 'AiroPulse-App/1.0'
+          }
+        }
+      );
+      
+      if (!response.ok) {
+        throw new Error('Geocoding service unavailable');
+      }
+      
+      const data = await response.json();
+      
+      if (data && data.length > 0) {
+        const location = data[0];
+        onLocationSelect({
+          lat: parseFloat(location.lat),
+          lng: parseFloat(location.lon),
+          name: location.display_name.split(',')[0] || searchQuery
+        });
+        toast.success(`Location found: ${location.display_name.split(',')[0]}`);
+      } else {
+        toast.error("Location not found. Try cities, villages, or specific addresses");
+      }
+    } catch (error) {
+      console.error("Geocoding error:", error);
+      toast.error("Unable to search location. Please try again.");
+    } finally {
+      setIsLocating(false);
     }
   };
 
@@ -92,15 +107,15 @@ const LocationSearch = ({ onLocationSelect }: LocationSearchProps) => {
           <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             type="text"
-            placeholder="Search location (e.g., New York, Tokyo)"
+            placeholder="Search any city, village, or address worldwide"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             className="pl-10 bg-background/50"
           />
         </div>
-        <Button onClick={handleSearch} className="bg-primary hover:bg-primary/90">
-          Search
+        <Button onClick={handleSearch} disabled={isLocating} className="bg-primary hover:bg-primary/90">
+          {isLocating ? <Loader2 className="w-4 h-4 animate-spin" /> : "Search"}
         </Button>
       </div>
 

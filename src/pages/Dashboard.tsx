@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import EarthVisualization from "@/components/EarthVisualization";
 import LocationSearch from "@/components/LocationSearch";
@@ -13,27 +13,38 @@ import { Button } from "@/components/ui/button";
 import { LogOut, Info } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { fetchAirQualityData, calculateOverallAQI, type AirQualityReading } from "@/services/airQualityService";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [currentLocation, setCurrentLocation] = useState({ name: "Global View", lat: 0, lng: 0 });
   const [pollutionLevel, setPollutionLevel] = useState(45);
+  const [airQualityData, setAirQualityData] = useState<AirQualityReading[]>([
+    { pollutant: "NO₂", value: 42, unit: "ppb", level: "moderate", icon: "🌫️" },
+    { pollutant: "PM2.5", value: 28, unit: "µg/m³", level: "good", icon: "💨" },
+    { pollutant: "O₃", value: 65, unit: "ppb", level: "moderate", icon: "☁️" },
+    { pollutant: "PM10", value: 45, unit: "µg/m³", level: "good", icon: "🌪️" },
+  ]);
 
-  // Mock air quality data - replace with real NASA TEMPO data
-  const airQualityData = [
-    { pollutant: "NO₂", value: 42, unit: "ppb", level: "moderate" as const, icon: "🌫️" },
-    { pollutant: "PM2.5", value: 28, unit: "µg/m³", level: "good" as const, icon: "💨" },
-    { pollutant: "O₃", value: 65, unit: "ppb", level: "moderate" as const, icon: "☁️" },
-    { pollutant: "HCHO", value: 18, unit: "ppb", level: "good" as const, icon: "🌡️" },
-  ];
+  // Fetch real air quality data when location changes
+  useEffect(() => {
+    const loadAirQuality = async () => {
+      if (currentLocation.lat !== 0 || currentLocation.lng !== 0) {
+        const data = await fetchAirQualityData(currentLocation.lat, currentLocation.lng);
+        setAirQualityData(data);
+        const aqi = calculateOverallAQI(data);
+        setPollutionLevel(aqi);
+      }
+    };
+    loadAirQuality();
+  }, [currentLocation]);
 
   const handleLocationSelect = (location: { lat: number; lng: number; name: string }) => {
     setCurrentLocation(location);
-    // Mock pollution level based on location
-    setPollutionLevel(Math.floor(Math.random() * 100));
     toast({
       title: "Location updated",
-      description: `Now showing data for ${location.name}`,
+      description: `Loading air quality data for ${location.name}`,
     });
   };
 
@@ -49,20 +60,10 @@ const Dashboard = () => {
   const handleRegionClick = (lat: number, lng: number) => {
     const regionName = `Region ${lat.toFixed(2)}°, ${lng.toFixed(2)}°`;
     setCurrentLocation({ name: regionName, lat, lng });
-    setPollutionLevel(Math.floor(Math.random() * 100));
     toast({
       title: "Region selected",
-      description: `Exploring ${regionName}`,
+      description: `Loading data for ${regionName}`,
     });
-  };
-   const { toast } = useToast();
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    toast({
-      title: "Logged out",
-      description: "You have been successfully logged out.",
-    });
-    navigate("/login");
   };
 
   
@@ -86,10 +87,6 @@ const Dashboard = () => {
             </div>
           </div>
           
-          <Button onClick={handleLogout} variant="outline" className="border-primary/30 hover:bg-primary/10">
-            <LogOut className="w-4 h-4 mr-2" />
-            Logout
-          </Button>
         </div>
       </header>
 
@@ -131,7 +128,12 @@ const Dashboard = () => {
 
         {/* Flight Predictions & Animal Status */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <FlightPredictions pollutionLevel={pollutionLevel} location={currentLocation.name} />
+          <FlightPredictions 
+            pollutionLevel={pollutionLevel} 
+            location={currentLocation.name}
+            lat={currentLocation.lat}
+            lng={currentLocation.lng}
+          />
           <AnimalStatus location={currentLocation.name} />
         </div>
 

@@ -1,13 +1,45 @@
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plane, AlertTriangle } from "lucide-react";
+import { Plane, AlertTriangle, Loader2 } from "lucide-react";
+import { fetchNearbyFlights, type FlightInfo } from "@/services/flightService";
 
 interface FlightPredictionsProps {
   pollutionLevel: number;
   location: string;
+  lat: number;
+  lng: number;
 }
 
-const FlightPredictions = ({ pollutionLevel, location }: FlightPredictionsProps) => {
+const FlightPredictions = ({ pollutionLevel, location, lat, lng }: FlightPredictionsProps) => {
+  const [flights, setFlights] = useState<FlightInfo[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadFlights = async () => {
+      setIsLoading(true);
+      const flightData = await fetchNearbyFlights(lat, lng);
+      
+      // Adjust flight status based on pollution
+      const adjustedFlights = flightData.map(flight => ({
+        ...flight,
+        status: pollutionLevel >= 150 
+          ? "Cancelled" 
+          : pollutionLevel >= 100 
+          ? `Delayed ${15 + Math.floor(Math.random() * 45)}m`
+          : flight.status
+      }));
+      
+      setFlights(adjustedFlights);
+      setIsLoading(false);
+    };
+
+    loadFlights();
+    // Refresh every 2 minutes
+    const interval = setInterval(loadFlights, 120000);
+    return () => clearInterval(interval);
+  }, [lat, lng, pollutionLevel]);
+
   const getFlightStatus = () => {
     if (pollutionLevel < 50) return { status: "Safe", color: "bg-success", icon: "✓" };
     if (pollutionLevel < 100) return { status: "Moderate Risk", color: "bg-warning", icon: "⚠" };
@@ -16,15 +48,6 @@ const FlightPredictions = ({ pollutionLevel, location }: FlightPredictionsProps)
   };
 
   const flightStatus = getFlightStatus();
-
-  // More realistic flight data with airlines
-  const mockFlights = [
-    { id: "AI148", airline: "Air India", type: "Arrival", time: "14:30", from: "Mumbai", status: pollutionLevel < 100 ? "On Time" : "Delayed 45m" },
-    { id: "6E2134", airline: "IndiGo", type: "Departure", time: "15:45", to: "Bangalore", status: pollutionLevel < 100 ? "On Time" : "Delayed 30m" },
-    { id: "SG8156", airline: "SpiceJet", type: "Arrival", time: "16:20", from: "Chennai", status: pollutionLevel < 100 ? "On Time" : "Delayed 1h" },
-    { id: "UK953", airline: "Vistara", type: "Departure", time: "17:00", to: "Kolkata", status: pollutionLevel < 100 ? "On Time" : "Delayed 25m" },
-    { id: "G8321", airline: "GoAir", type: "Arrival", time: "17:45", from: "Hyderabad", status: pollutionLevel < 150 ? "On Time" : "Cancelled" },
-  ];
 
   return (
     <Card className="border-primary/20 bg-card/50 backdrop-blur-sm">
@@ -64,7 +87,12 @@ const FlightPredictions = ({ pollutionLevel, location }: FlightPredictionsProps)
               <span className="text-xs text-success">Live</span>
             </div>
           </div>
-          {mockFlights.map((flight) => (
+          {isLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-6 h-6 animate-spin text-primary" />
+            </div>
+          ) : (
+            flights.map((flight) => (
             <div key={flight.id} className="p-3 rounded-lg bg-muted/20 hover:bg-muted/30 transition-all duration-200 border border-primary/10 hover:border-primary/30">
               <div className="flex items-center justify-between mb-2">
                 <div>
@@ -83,7 +111,8 @@ const FlightPredictions = ({ pollutionLevel, location }: FlightPredictionsProps)
                 <span>{flight.type === "Arrival" ? `From ${(flight as any).from}` : `To ${(flight as any).to}`}</span>
               </div>
             </div>
-          ))}
+            ))
+          )}
         </div>
       </CardContent>
     </Card>
