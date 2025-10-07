@@ -50,10 +50,9 @@ const Dashboard = () => {
 
   const handleCitySelect = (city: any) => {
     setCurrentLocation({ name: city.name, lat: city.lat, lng: city.lng });
-    setPollutionLevel(city.aqi);
     toast({
       title: "City selected",
-      description: `Viewing air quality data for ${city.name}`,
+      description: `Loading air quality data for ${city.name}`,
     });
   };
 

@@ -37,10 +37,17 @@ const calculateLevel = (pollutant: string, value: number): "good" | "moderate" |
 
 export const fetchAirQualityData = async (lat: number, lng: number): Promise<AirQualityReading[]> => {
   try {
-    // OpenAQ API - free, no key required
-    const radius = 25000; // 25km radius
+    // Use edge function to avoid CORS issues
     const response = await fetch(
-      `https://api.openaq.org/v2/latest?coordinates=${lat},${lng}&radius=${radius}&limit=100`
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/fetch-air-quality`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`
+        },
+        body: JSON.stringify({ lat, lng })
+      }
     );
 
     if (!response.ok) {
